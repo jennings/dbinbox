@@ -1,5 +1,5 @@
 require 'sinatra'
- 
+
 set :environment, :production
 set :port, 3200
 disable :run, :reload

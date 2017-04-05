@@ -7,10 +7,8 @@
 
   $(function() {
     var downloadRowHTML, uploadRowHTML;
-
     uploadRowHTML = function(filename, filesize, error) {
       var row;
-
       if (filesize == null) {
         filesize = -1;
       }
@@ -29,7 +27,6 @@
     };
     downloadRowHTML = function(file) {
       var row;
-
       row = $('<tr class="template-download">' + '<td class="filename-col span7">' + '<img class="sprite s_page_white_get image_icon" src="/img/icon_spacer.gif" />' + '<span class="name"></span>' + '<span class="size"></span>' + '</td>' + '<td class="info-col span4"></td>' + '<td class="status-col span1">' + '<img class="sprite s_synced status_image" src="/img/icon_spacer.gif" />' + '</td>' + "</tr>");
       row.find('.name').text(file.name);
       if (file.human_size) {
@@ -57,7 +54,6 @@
       downloadTemplateId: null,
       uploadTemplate: function(o) {
         var rows;
-
         $('.instructions').hide();
         console.log("uploadTemplate");
         rows = $();
@@ -71,7 +67,6 @@
       },
       downloadTemplate: function(o) {
         var rows;
-
         console.log("downloadtemplate");
         console.log(o);
         rows = $();
@@ -99,7 +94,6 @@
     });
     $("form#send_text").submit(function(e) {
       var filename, filename_value, form, formData, previous_submit_button_value, row, submit_button;
-
       e.preventDefault();
       form = $(this);
       formData = form.serialize();
@@ -128,7 +122,6 @@
     });
     return $(document).bind('dragover', function(e) {
       var dropZone, timeout;
-
       dropZone = $('#dropzone');
       timeout = window.dropZoneTimeout;
       $('.instructions').addClass('hover');

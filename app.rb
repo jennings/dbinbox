@@ -72,11 +72,11 @@ File.open('./public/js/app.js', 'w'){|f|
 # user visits homepage
 # user enters desired username
 # app checks that username isn't already registered
-  # if yes -> redirect to home page with error message
+# if yes -> redirect to home page with error message
 # app stores dbsession and desired username in session
 # dropbox authenticates
 # app creates user from session's username, dbtoken, and info from /account/info
-  # doublechecks that username isn't taken
+# doublechecks that username isn't taken
 # app shows user registered page with link to their dbinbox
 
 # person visits link
@@ -101,7 +101,7 @@ get '/' do
     account_info = dbclient.account_info
     puts "account_info = #{account_info}"
     quota = account_info["quota_info"]
-    
+
     @user = User.create(
       :username        => session[:username],
       :dropbox_session => dbsession.serialize,
@@ -170,7 +170,7 @@ get "/logout" do
 end
 
 get "/admin" do
-  if params[:oauth_token] 
+  if params[:oauth_token]
     # just came from being authenticated from Dropbox
     # stash this user's username and update their session
     dbsession = DropboxSession.deserialize(session[:dropbox_session])
