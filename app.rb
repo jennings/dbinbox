@@ -18,8 +18,8 @@ DataMapper.setup(:default, database_url)
 
 # enable logging
 require 'logger'
-@@log = Logger.new(STDOUT)
-@@log.level = Logger::Severity::INFO
+LOG = Logger.new(STDOUT)
+LOG.level = Logger::Severity::INFO
 
 # from http://stackoverflow.com/questions/8414395/verb-agnostic-matching-in-sinatra
 def self.get_or_post(url,&block)
@@ -86,10 +86,10 @@ File.open('./public/js/app.js', 'w'){|f|
 
 get '/' do
   if !params[:oauth_token]
-    @@log.info "first-time user!"
+    LOG.info "first-time user!"
     haml :index
   else
-    @@log.info "Creating account for \"#{session[:username]}\"."
+    LOG.info "Creating account for \"#{session[:username]}\"."
     # the user has returned from Dropbox
     # we've been authorized, so now request an access_token
     dbsession = DropboxSession.deserialize(session[:dropbox_session])
@@ -117,12 +117,12 @@ get '/' do
     )
 
     if @user.saved?
-      @@log.info "\"#{session[:username]}\"'s account has been created."
+      LOG.info "\"#{session[:username]}\"'s account has been created."
       session[:registered] = true
       haml :index
     else
-      @@log.info "\"#{session[:username]}\"'s account could not be created."
-      @@log.info @user
+      LOG.info "\"#{session[:username]}\"'s account could not be created."
+      LOG.info @user
       @error = "Sorry, your information couldn't be saved: #{@user.errors.map(&:to_s).join(', ')}. Please try again or report the issue to <a href='https://twitter.com/cgenco'>@cgenco</a>."
       haml :index
     end
@@ -132,7 +132,7 @@ end
 # request a username
 post '/' do
   username = params['username']
-  @@log.info "\"#{username}\" username requested"
+  LOG.info "\"#{username}\" username requested"
 
   # if the user already exists and is currently authenticated
   # or if the requested username isn't composed of word characters
@@ -234,7 +234,7 @@ get_or_post '/send/:username/?*' do
   params[:files] ||= []
 
   if message = params["message"]
-    @@log.info "Sending text to /#{params[:username]}: \"#{params["message"]}\""
+    LOG.info "Sending text to /#{params[:username]}: \"#{params["message"]}\""
     puts "post /#{params['username']}/send_text"
 
     message = params["message"]
@@ -263,7 +263,7 @@ get_or_post '/send/:username/?*' do
       response[:delete_type]   = "DELETE"
       response
     rescue DropboxAuthError
-      @@log.error "DropboxAuthError"
+      LOG.error "DropboxAuthError"
       session[:registered] = false
       @user.authenticated  = false
       @user.save
@@ -279,7 +279,7 @@ get_or_post '/send/:username/?*' do
 end
 
 get "/:username/?*" do
-  @@log.info "/#{params[:username]}"
+  LOG.info "/#{params[:username]}"
   @subfolder = params[:splat].first
   @user = User.get(params[:username])
   @action = "/send/" + params[:username] + (@subfolder ? "/" + @subfolder : "")
