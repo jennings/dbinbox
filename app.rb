@@ -192,14 +192,14 @@ get "/admin" do
     return haml :admin
   else
     # need to get authenticated by Dropbox first
-    redirect url('/signin')
+    redirect url('/login')
   end
 
 end
 
 post "/admin" do
   @user = User.get(session[:username])
-  redirect url('/signin') unless @user
+  redirect url('/login') unless @user
 
   @user.update(:password => params[:access_code])
   return haml :admin
@@ -212,7 +212,7 @@ post "/delete" do
     session.clear
     redirect url('/')
   else
-    redirect url('/signin')
+    redirect url('/login')
   end
 end
 
