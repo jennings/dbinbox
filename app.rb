@@ -25,14 +25,7 @@ DataMapper.setup(:default, database_url)
 
 # enable logging
 require 'logger'
-if ENV['LOG_TO_STDOUT']
-  logpath = STDOUT
-else
-  logdir = File.join(directory, "log")
-  Dir.mkdir(logdir) unless File.directory? logdir
-  logpath = File.join(logdir, "dbinbox.log")
-end
-@@log = Logger.new(logpath)
+@@log = Logger.new(STDOUT)
 @@log.level = Logger::Severity::INFO
 
 # from http://stackoverflow.com/questions/8414395/verb-agnostic-matching-in-sinatra
