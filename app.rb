@@ -11,16 +11,9 @@ require 'dm-validations'
 
 enable :sessions
 
-production = !File.exists?("../../../projects")
-directory = production ? File.expand_path("../../shared") : Dir.pwd
-
 # Use DATABASE_URL from the environment if we have it,
 # otherwise just use sqlite
-if ENV['DATABASE_URL']
-  database_url = ENV['DATABASE_URL']
-else
-  database_url = "sqlite3://#{File.join(directory, "users.db")}"
-end
+database_url = ENV['DATABASE_URL'] || "sqlite3://#{File.join(Dir.pwd, "users.db")}"
 DataMapper.setup(:default, database_url)
 
 # enable logging
