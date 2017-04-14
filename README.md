@@ -1,5 +1,5 @@
 dbinbox
-======
+=======
 
 **Notice**: this branch is not longer the deployed branch in preparation for handling financial data for premium features on dbinbox.com. This public branch can now be simplified to support single instance deployments on Heroku (or another PaaS), and won't need to support more than a single account.
 
@@ -16,8 +16,25 @@ Uses: https://github.com/blueimp/jQuery-File-Upload
 And: http://datamapper.org/
 
 
-Deploying a private instance
------------------------------
+## Development
+
+Create your own [Dropbox app](https://www.dropbox.com/developers/apps), then
+create a `.env` file and fill in your app's key and secret:
+
+    cp .env.sample .env
+    nano .env
+
+Install [Vagrant](https://www.vagrantup.com/), then run:
+
+    vagrant up
+
+This will start dbinbox running in a Vagrant VM. The app should be available at
+**`http://localhost:9393`**
+
+The app should automatically reload each time you edit a file.
+
+
+## Deploying a private instance
 
 ### Heroku
 
