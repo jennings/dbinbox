@@ -1,21 +1,9 @@
-# Build and Object Folders
-bin/
-obj/
-
-#User Specific Files
-*.user
-*.suo
-
-#Resource Caches
-_ReSharper.*
-*.sln.cache
-
 # Database files
 *.db
 *.backup
 
 # from http://gembundler.com/deploying.html
-.bundle
+.bundle/
 
 # Ignore Dropbox API keys
 .dbsecret
@@ -31,3 +19,4 @@ dev
 log/
 
 .DS_Store
+.vagrant/
