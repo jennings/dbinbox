@@ -1,0 +1,16 @@
+config/
+log/
+tests/
+
+Dockerfile
+LICENSE
+README.md
+users.db
+Vagrantfile
+
+.bundle/
+.dockerignore
+.env*
+.git*
+.gitignore
+.vagrant/

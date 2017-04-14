@@ -15,11 +15,14 @@ gem 'dm-migrations'
 gem 'dm-validations'
 
 group :development do
-  gem 'dm-sqlite-adapter'
   gem 'shotgun'
 end
 
-group :production do
+group :sqlite do
+  gem 'dm-sqlite-adapter'
+end
+
+group :postgres do
   gem 'dm-postgres-adapter'
 end
 
