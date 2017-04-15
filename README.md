@@ -1,19 +1,20 @@
-dbinbox
-=======
+Dropzone
+========
 
-**Notice**: this branch is not longer the deployed branch in preparation for handling financial data for premium features on dbinbox.com. This public branch can now be simplified to support single instance deployments on Heroku (or another PaaS), and won't need to support more than a single account.
+An inbox for your Dropbox. For the original hosted version, see:
+[dbinbox](https://dbinbox.com).
 
-an inbox for your Dropbox. Try it out at [dbinbox.com](http://dbinbox.com)!
+By visiting your personal Dropzone URL, visitors will be able to upload files
+straight into a special inbox folder in your Dropbox.
 
-By visiting your personal dbinbox url, non-Dropbox users will be able to upload files straight into a special inbox folder in your Dropbox.
+Thanks to [Christian Genco](https://github.com/christiangenco) for the bulk of
+this code. I renamed this repo to "Dropzone" because it didn't feel right using
+his business' name.
 
-This is also quite handy if you need to send yourself a file from someone else's computer but don't want to log into email or remember a tinyurl.
+Uses:
 
-An answer to https://forums.dropbox.com/topic.php?id=3525
-
-Uses: https://github.com/blueimp/jQuery-File-Upload
-
-And: http://datamapper.org/
+* https://github.com/blueimp/jQuery-File-Upload
+* http://datamapper.org/
 
 
 ## Development
@@ -36,6 +37,16 @@ The app should automatically reload each time you edit a file.
 
 ## Deploying a private instance
 
+### Self-hosted
+
+    # for Postgres
+    bundle install --without sqlite development
+
+    # for SQLite
+    bundle install --without postgres development
+
+    bundle exec rackup --port 3000
+
 ### Heroku
 
 To deploy on Heroku's Cedar stack:
@@ -56,10 +67,6 @@ To deploy on Heroku's Cedar stack:
         heroku config:set DROPBOX_KEY="my-dropbox-key"
         heroku config:set DROPBOX_SECRET="my-dropbox-secret"
 
-4. Set some Heroku-specific settings
-
-        heroku config:set LOG_TO_STDOUT=true
-
-5. Push!
+4. Push!
 
         git push heroku master
