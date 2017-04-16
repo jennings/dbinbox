@@ -1,6 +1,8 @@
 Dropzone
 ========
 
+[![Docker Build Status](https://img.shields.io/docker/build/jennings/dropzone.svg)](https://hub.docker.com/r/jennings/dropzone)
+
 An inbox for your Dropbox. For the original hosted version, see:
 [dbinbox](https://dbinbox.com).
 
