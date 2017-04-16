@@ -1,6 +1,6 @@
 %h1
-  dbinbox
-  %small an inbox for your Dropbox
+  Dropzone
+  %small An inbox for your Dropbox
 
 -if !session[:registered] # if the user isn't registered
   %form.form-inline{action: "/", method: "post"}
@@ -22,9 +22,9 @@
     %p
       By visiting
       -if url
-        %a{href: url}your personal dbinbox url,
+        %a{href: url}your personal Dropzone url,
       -else
-        your personal dbinbox,
+        your personal Dropzone,
       non-Dropbox users will be able to upload files straight into a special 'inbox' folder in your Dropbox.
     %p This is also quite handy if you need to send yourself a file from someone else's computer but don't want to log into email or remember a tinyurl.
-    %p Public dbinboxes can be optionally passphrase protected.
+    %p Public dropzones can be optionally passphrase protected.

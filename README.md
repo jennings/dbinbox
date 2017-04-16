@@ -31,7 +31,7 @@ Install [Vagrant](https://www.vagrantup.com/), then run:
 
     vagrant up
 
-This will start dbinbox running in a Vagrant VM. The app should be available at
+This will start Dropzone running in a Vagrant VM. The app should be available at
 **`http://localhost:9393`**
 
 The app should automatically reload each time you edit a file.

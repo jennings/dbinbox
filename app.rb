@@ -77,7 +77,7 @@ File.open('./public/js/app.js', 'w'){|f|
 # dropbox authenticates
 # app creates user from session's username, dbtoken, and info from /account/info
 # doublechecks that username isn't taken
-# app shows user registered page with link to their dbinbox
+# app shows user registered page with link to their Dropzone
 
 # person visits link
 # app looks up access token based on username
