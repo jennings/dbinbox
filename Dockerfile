@@ -19,8 +19,7 @@ RUN         apt-get update \
                 libsqlite3-dev              \
                 # libpq-dev                   \
                 # postgresql-server-dev-9.4   \
-            && apt-get autoremove           \
-            && apt-get autoclean            \
+            && rm -rf /var/lib/apt/lists/*  \
             && /usr/bin/gem install bundler
 
 COPY        ["Gemfile", "Gemfile.lock", "/app/"]
