@@ -86,8 +86,11 @@ File.open('./public/js/app.js', 'w'){|f|
 
 get '/' do
   if !params[:oauth_token]
-    LOG.info "first-time user!"
-    haml :index
+    if settings.default_username
+      redirect "/#{settings.default_username}"
+    else
+      haml :index
+    end
   else
     LOG.info "Creating account for \"#{session[:username]}\"."
     # the user has returned from Dropbox
