@@ -9,6 +9,8 @@
         -if request.host
           %span.add-on #{request.host}/
         %input.span4#username(placeholder="your_username_here" name="username" type="text" value="#{params['username']}")
+        -if @require_registration_password
+          %input.span4(placeholder="Registration password" name="registration_password" type="text")
       %button.btn.btn-success(type='submit' title="links with Dropbox") link with Dropbox
       %span.help-inline=@error
 -else

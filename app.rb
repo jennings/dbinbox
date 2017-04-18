@@ -58,6 +58,10 @@ File.open('./public/js/app.js', 'w'){|f|
   f.puts CoffeeScript.compile(File.open("./public/js/app.coffee").read)
 }
 
+before do
+  @require_registration_password = !settings.registration_password.empty?
+end
+
 # ----------------------------------------------
 
 # user visits homepage
@@ -138,6 +142,8 @@ post '/' do
     @error = "Your username must only contain letters." if !(username =~ /^\w+$/)
   elsif username.empty?
     @error = "Your username can't be blank! I need to use that one! D:"
+  elsif @require_registration_password && settings.registration_password != params[:registration_password]
+    @error = "Sorry, you must provide the right registration password to create an account."
   elsif username =~ /^admin|login|logout|delete|send$/
     @error = "Nice try, smarty pants."
   end
@@ -288,4 +294,3 @@ get "/:username/?*" do
     haml :enter_password
   end
 end
-

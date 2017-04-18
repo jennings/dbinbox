@@ -16,6 +16,10 @@ set :dbsecret, ENV['DROPBOX_SECRET']
 # redirects to automatically.
 set :default_username, ENV['DROPZONE_DEFAULT_USERNAME']
 
+# Setting a registration password blocks new users unless they know the
+# password.
+set :registration_password, ENV['DROPZONE_REGISTRATION_PASSWORD']
+
 require File.join(File.dirname(__FILE__), 'app')
 set :protection, :except => [:remote_token, :frame_options, :json_csrf]
 run Sinatra::Application
