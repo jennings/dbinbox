@@ -1,9 +1,17 @@
 require 'sinatra'
 
-set :environment, :production
-set :port, 3200
+set :port, 8000
+enable :sessions
 disable :run, :reload
-#
+
+# Use DATABASE_URL from the environment if we have it, otherwise just use a
+# default SQLite database.
+set :database_url, ENV['DATABASE_URL'] || "sqlite3://#{File.join(Dir.pwd, "users.db")}"
+
+# Dropbox API
+set :dbkey,    ENV['DROPBOX_KEY']
+set :dbsecret, ENV['DROPBOX_SECRET']
+
 # If running as a single-instance, the default username is the one that /
 # redirects to automatically.
 set :default_username, ENV['DROPZONE_DEFAULT_USERNAME']

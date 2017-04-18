@@ -9,12 +9,7 @@ require 'dm-types'
 require 'dm-migrations'
 require 'dm-validations'
 
-enable :sessions
-
-# Use DATABASE_URL from the environment if we have it,
-# otherwise just use sqlite
-database_url = ENV['DATABASE_URL'] || "sqlite3://#{File.join(Dir.pwd, "users.db")}"
-DataMapper.setup(:default, database_url)
+DataMapper.setup(:default, settings.database_url)
 
 # enable logging
 require 'logger'
@@ -47,10 +42,6 @@ class User
 end
 # Automatically create the tables if they don't exist
 DataMapper.auto_upgrade!
-
-# dropbox api
-set :dbkey,    ENV['DROPBOX_KEY'] || File.read(".dbkey")
-set :dbsecret, ENV['DROPBOX_SECRET'] || File.read(".dbsecret")
 
 class Numeric
   def to_human

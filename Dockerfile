@@ -4,7 +4,8 @@ WORKDIR     /app
 VOLUME      ["/data"]
 EXPOSE      8000
 ENV         DATABASE_URL=sqlite3:///data/dropzone.sqlite3
-ENTRYPOINT  ["/usr/local/bin/bundle", "exec", "rackup", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT  ["/usr/local/bin/bundle", "exec"]
+CMD         ["rackup", "--env", "deployment", "--host", "0.0.0.0", "--port", "8000"]
 
 # The commented lines add Postgres support, but inflate the image size
 RUN         apt-get update \

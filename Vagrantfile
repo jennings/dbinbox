@@ -72,11 +72,11 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", run: 'always', privileged: false, inline: <<-SHELL
     cd /vagrant
-    killall bundle
+    killall -q bundle
 
     bundle install --without production
-    mkdir log || true
+    mkdir -p log
     export $(cat '.env' | xargs)
-    bundle exec shotgun --host 0.0.0.0 >> log/development.log &
+    bundle exec shotgun --env development --host 0.0.0.0 >>log/stdout.log 2>>log/stderr.log &
   SHELL
 end
