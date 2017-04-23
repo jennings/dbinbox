@@ -2,7 +2,6 @@ require 'sinatra'
 require 'dropbox_sdk'
 require 'json'
 require 'haml'
-require 'coffee-script'
 # database from http://datamapper.org/getting-started.html
 require 'dm-core'
 require 'dm-types'
@@ -52,11 +51,6 @@ class Numeric
     s.sub(/\.?0*$/, " " + units[e])
   end
 end
-
-# compile app.coffee
-File.open('./public/js/app.js', 'w'){|f|
-  f.puts CoffeeScript.compile(File.open("./public/js/app.coffee").read)
-}
 
 before do
   @require_registration_password = !settings.registration_password.empty?

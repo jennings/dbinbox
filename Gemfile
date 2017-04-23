@@ -6,9 +6,6 @@ gem 'json'
 gem 'haml'
 gem 'secure_headers'
 
-gem 'coffee-script'
-gem 'therubyracer'
-
 # database
 gem 'dm-core'
 gem 'dm-types'
