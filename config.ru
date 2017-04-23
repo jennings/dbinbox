@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'secure_headers'
 
 set :port, 8000
 enable :sessions
@@ -19,6 +20,19 @@ set :default_username, ENV['DROPZONE_DEFAULT_USERNAME']
 # Setting a registration password blocks new users unless they know the
 # password.
 set :registration_password, ENV['DROPZONE_REGISTRATION_PASSWORD']
+
+use SecureHeaders::Middleware
+SecureHeaders::Configuration.default do |config|
+  config.cookies = {
+    httponly: true,
+    secure: true,
+  }
+  config.csp = {
+    default_src: %w('self'),
+    script_src: %w('self' 'unsafe-inline'),
+    style_src: %w('self' 'unsafe-inline'),
+  }
+end
 
 require File.join(File.dirname(__FILE__), 'app')
 set :protection, :except => [:remote_token, :frame_options, :json_csrf]

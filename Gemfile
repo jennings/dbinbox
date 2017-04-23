@@ -4,6 +4,7 @@ gem 'sinatra'
 gem 'dropbox-sdk'
 gem 'json'
 gem 'haml'
+gem 'secure_headers'
 
 gem 'coffee-script'
 gem 'therubyracer'
