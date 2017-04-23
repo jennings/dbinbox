@@ -78,7 +78,7 @@ $ ->
 
         console.log("filename = " + file.name)
         console.log("size = " + file.bytes)
-      
+
         if file.error && file.error_class == 'DropboxAuthError'
           console.log "it's an authentication error!"
           $('#re-authenticate').show()
@@ -94,7 +94,7 @@ $ ->
     #     console.log file.pat`h
     #     $('<p/>').text(file.path).appendTo(document.body)
   })
-  
+
   # hide send text div until "send text" button is pressed
   $("#send_text").slideUp()
   $("#show_send_message").fadeIn()
@@ -136,14 +136,18 @@ $ ->
       $(row).replaceWith(downloadRowHTML(data[0]))
     )
 
+  $('#delete_confirmation').on 'keyup', (e) ->
+    if this.value == 'DELETE'
+      $('#delete_button').removeAttr('disabled').removeClass('disabled')
+
   # dropzone effect
   $(document).bind 'dragover', (e) ->
     dropZone = $('#dropzone')
     timeout = window.dropZoneTimeout
-    $('.instructions').addClass('hover');
+    $('.instructions').addClass('hover')
 
     if !timeout
-      dropZone.addClass('in') 
+      dropZone.addClass('in')
     else
       clearTimeout(timeout)
     if (e.target == dropZone[0])

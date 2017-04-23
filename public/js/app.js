@@ -120,6 +120,11 @@
         return $(row).replaceWith(downloadRowHTML(data[0]));
       });
     });
+    $('#delete_confirmation').on('keyup', function(e) {
+      if (this.value === 'DELETE') {
+        return $('#delete_button').removeAttr('disabled').removeClass('disabled');
+      }
+    });
     return $(document).bind('dragover', function(e) {
       var dropZone, timeout;
       dropZone = $('#dropzone');

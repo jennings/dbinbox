@@ -29,7 +29,7 @@ SecureHeaders::Configuration.default do |config|
   }
   config.csp = {
     default_src: %w('self'),
-    script_src: %w('self' 'unsafe-inline'),
+    script_src: %w('self'),
     style_src: %w('self' 'unsafe-inline'),
   }
 end
