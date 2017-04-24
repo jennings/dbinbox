@@ -63,7 +63,6 @@ To deploy on Heroku's Cedar stack:
 2. Set BUNDLE_WITHOUT to ignore the sqlite dependencies (this requires
    enabling the user_env_compile feature flag):
 
-        heroku labs:enable user-env-compile
         heroku config:set BUNDLE_WITHOUT="development:test:sqlite"
 
 3. Configure your Dropbox key and secret
