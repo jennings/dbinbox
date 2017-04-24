@@ -1978,9 +1978,3 @@ h1{
  height: 9px;
  width: 9px;
 }
-#gs {
- background-color: #fff;
- margin-top: -9px;
-}
-
-/*#gs h1{font-size:20px;font-weight:600;color:#222;margin-top:0}#gs h1 img{margin-left:12px;margin-right:4px;position:relative;top:7px}#gs h2{font-size:16px;font-weight:600;margin:1.25em 0 .75em 0;padding:0;background:none}#gs p{font-size:13px;line-height:1.8em}#gs .explanation{height:120px;padding:12px 40px 20px 54px;margin-top:12px}#gs #progress-box{width:215px;height:193px;position:relative;top:-65px;float:right;margin-left:50px}#gs #progress-box #mask-box{position:absolute}#gs #progress-box img{position:absolute;top:0;left:0;z-index:1}#gs #progress-box #mask{z-index:4}#gs #progress-table{zoom:1;border-collapse:collapse;width:100%;position:relative;font-size:14px}#gs #progress-table .bubble{font-size:13px}#gs #progress-table td.step{padding-top:10px;padding-left:36px;width:49px;height:51px}#gs #progress-table td.step div{position:relative}#gs #progress-table td.step span{position:absolute;z-index:4;top:8px;left:19px;font-size:12px;font-weight:600}#gs #progress-table td.step-desc{width:565px;color:#4c90d6}#gs #progress-table td.step-desc .completed{color:#32951b;text-decoration:line-through}#gs #progress-table td.step-desc .completed:hover{color:#32951b;text-decoration:line-through underline}#gs #progress-table td.step-status{color:#32951b}#gs #gs_award{margin-left:4px;margin-top:3px;width:215px;height:193px;position:absolute;z-index:5 !important}#gs #gs_award span{position:absolute;display:block;width:115px;height:35px;top:83px;left:42px;z-index:6;text-align:center;font-size:24px;font-weight:600;color:#111;line-height:35px}#gs .bubble{position:absolute;width:300px}*/
