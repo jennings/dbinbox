@@ -8,14 +8,13 @@
 
   $(function() {
     var uploadRowHTML = function(filename, filesize, error) {
-      var row
       if (filesize == null) {
         filesize = -1
       }
       if (error == null) {
         error = null
       }
-      row = $(
+      var row = $(
         '<tr class="template-upload">' +
           '<td class="filename-col span7">' +
           '<img class="sprite s_page_white_get" src="/img/icon_spacer.gif" />' +
@@ -39,8 +38,7 @@
     }
 
     var downloadRowHTML = function(file) {
-      var row
-      row = $(
+      var row = $(
         '<tr class="template-download">' +
           '<td class="filename-col span7">' +
           '<img class="sprite s_page_white_get image_icon" src="/img/icon_spacer.gif" />' +
@@ -84,10 +82,9 @@
       uploadTemplateId: null,
       downloadTemplateId: null,
       uploadTemplate: function(o) {
-        var rows
         $(".instructions").hide()
         console.log("uploadTemplate")
-        rows = $()
+        var rows = $()
         $.each(o.files, function(index, file) {
           console.log(file)
           console.log("filename = " + file.name)
@@ -99,10 +96,9 @@
         return rows
       },
       downloadTemplate: function(o) {
-        var rows
         console.log("downloadtemplate")
         console.log(o)
-        rows = $()
+        var rows = $()
         $.each(o.files, function(index, file) {
           console.log("looping over o.files in downloadTemplate...")
           console.log(file)
@@ -129,31 +125,24 @@
     })
 
     $("form#send_text").submit(function(e) {
-      var filename,
-        filenameValue,
-        form,
-        formData,
-        previousSubmitButtonValue,
-        row,
-        submitButton
       e.preventDefault()
-      form = $(this)
-      formData = form.serialize()
+      var form = $(this)
+      var formData = form.serialize()
       $(".instructions").hide()
-      submitButton = form.children("input[type=submit]")[0]
-      previousSubmitButtonValue = submitButton.value
+      var submitButton = form.children("input[type=submit]")[0]
+      var previousSubmitButtonValue = submitButton.value
       submitButton.value = "Sending..."
       form
         .find("input, textarea")
         .addClass("disabled")
         .attr("disabled", "disabled")
-      filename = $("#timestamp").text()
-      filenameValue = $("#filename").val()
+      var filename = $("#timestamp").text()
+      var filenameValue = $("#filename").val()
       if (filenameValue && filenameValue !== "") {
         filename += " " + filenameValue
       }
       filename += ".txt"
-      row = uploadRowHTML(filename)
+      var row = uploadRowHTML(filename)
       $(".filelist .files").append(row)
       console.log(form.attr("action"))
       return $.post(form.attr("action"), formData, function(
@@ -182,9 +171,8 @@
     })
 
     $(document).bind("dragover", function(e) {
-      var dropZone, timeout
-      dropZone = $("#dropzone")
-      timeout = window.dropZoneTimeout
+      var dropZone = $("#dropzone")
+      var timeout = window.dropZoneTimeout
       $(".instructions").addClass("hover")
       if (!timeout) {
         dropZone.addClass("in")
