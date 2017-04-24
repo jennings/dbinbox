@@ -7,7 +7,7 @@
     })
 
   $(function() {
-    var uploadRowHTML = function(filename, filesize, error) {
+    function getUploadRowHTML(filename, filesize, error) {
       if (filesize == null) {
         filesize = -1
       }
@@ -37,7 +37,7 @@
       return row
     }
 
-    var downloadRowHTML = function(file) {
+    function getDownloadRowHTML(file) {
       var row = $(
         '<tr class="template-download">' +
           '<td class="filename-col span7">' +
@@ -89,9 +89,9 @@
           console.log(file)
           console.log("filename = " + file.name)
           console.log("size = " + file.human_size)
-          return (rows = rows.add(
-            uploadRowHTML(file.name, file.human_size, file.error)
-          ))
+          rows = rows.add(
+            getUploadRowHTML(file.name, file.human_size, file.error)
+          )
         })
         return rows
       },
@@ -110,7 +110,7 @@
             $("#upload_button").addClass("disabled")
             $("#upload_button input").prop("disabled", true)
           }
-          return (rows = rows.add(downloadRowHTML(file)))
+          rows = rows.add(getDownloadRowHTML(file))
         })
         return rows
       }
@@ -121,7 +121,7 @@
     $("#show_send_message").fadeIn()
     $("#show_send_message").click(function() {
       $(this).fadeOut()
-      return $("#send_text").slideDown()
+      $("#send_text").slideDown()
     })
 
     $("form#send_text").submit(function(e) {
@@ -142,7 +142,7 @@
         filename += " " + filenameValue
       }
       filename += ".txt"
-      var row = uploadRowHTML(filename)
+      var row = getUploadRowHTML(filename)
       $(".filelist .files").append(row)
       console.log(form.attr("action"))
       return $.post(form.attr("action"), formData, function(
@@ -158,15 +158,13 @@
         console.log(form)
         form[0].reset()
         submitButton.value = previousSubmitButtonValue
-        return $(row).replaceWith(downloadRowHTML(data[0]))
+        $(row).replaceWith(getDownloadRowHTML(data[0]))
       })
     })
 
     $("#delete_confirmation").on("keyup", function(e) {
       if (this.value === "DELETE") {
-        return $("#delete_button")
-          .removeAttr("disabled")
-          .removeClass("disabled")
+        $("#delete_button").removeAttr("disabled").removeClass("disabled")
       }
     })
 
@@ -184,11 +182,11 @@
       } else {
         dropZone.removeClass("hover")
       }
-      return (window.dropZoneTimeout = setTimeout(function() {
+      window.dropZoneTimeout = setTimeout(function() {
         $(".instructions").removeClass("hover")
         window.dropZoneTimeout = null
-        return dropZone.removeClass("in hover")
-      }, 100))
+        dropZone.removeClass("in hover")
+      }, 100)
     })
   })
 }.call(this))
