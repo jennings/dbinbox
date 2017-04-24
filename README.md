@@ -41,6 +41,29 @@ The app should automatically reload each time you edit a file.
 
 ### Self-hosted
 
+There's a [Docker image](https://hub.docker.com/r/jennings/dropzone/) you can
+use. The service in the container listens on port 8000 and stores its data in
+`/data`:
+
+```bash
+cp .env.sample /path/to/environment_variables.txt
+nano /path/to/environment_variables.txt
+
+# Create and
+docker container run -d --name dropzone \
+                     -p 8000:8000 \
+                     -v /path/to/data:/data \
+                     --env-file /path/to/environment_variables.txt
+                     --restart unless-stopped \
+                     jennings/dropzone
+```
+
+You probably want HTTPS, so this can be run behind a [reverse
+proxy](#reverse-proxy-with-nginx).
+
+
+### Self-hosted (without Docker)
+
 ```bash
 # for Postgres
 bundle install --without sqlite development
@@ -48,8 +71,17 @@ bundle install --without sqlite development
 # for SQLite
 bundle install --without postgres development
 
-bundle exec rackup --host 0.0.0.0 --port 3000
+# Get these values from developer.dropbox.com
+export DROPBOX_KEY="my-dropbox-key"
+export DROPBOX_SECRET="my-dropbox-secret"
+
+bundle exec rackup --host 0.0.0.0 --port 8000
+
 ```
+
+Again, you should probably run this behind a [reverse
+proxy](#reverse-proxy-with-nginx).
+
 
 ### Heroku
 
@@ -73,3 +105,59 @@ To deploy on Heroku's Cedar stack:
 4. Push!
 
         git push heroku master
+
+## Reverse proxy with nginx
+
+You probably want HTTPS, so you'll need a reverse proxy to terminate the TLS
+(SSL) connection.
+
+Don't have a favorite reverse proxy server? nginx is pretty easy to configure.
+Here's an example nginx.conf script that's ready to use. This config expects
+you to have used [Certbot](https://certbot.eff.org/) to install a free
+certificate from [Let's Encrypt](https://letsencrypt.org/).
+
+```conf
+events {
+}
+
+http {
+
+    upstream dropzone {
+        # Change this if you're running dropzone on another server
+        server localhost:8000;
+    }
+
+    server {
+        listen      80;
+        listen      [::]:80;
+
+        location / {
+            return 301 https://$host$request_uri;
+        }
+
+        # This is so Certbot can use the webroot authenticator
+        location /.well-known/ {
+            root /usr/share/nginx/html/.well-known;
+        }
+    }
+
+    server {
+        listen              443 ssl;
+        listen              [::]:443 ssl;
+
+        # Change these lines so they contain your real domain name
+        server_name         MY-DOMAIN.EXAMPLE.COM;
+        ssl_certificate     /etc/letsencrypt/live/MY-DOMAIN.EXAMPLE.COM/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/MY-DOMAIN.EXAMPLE.COM/privkey.pem;
+
+        location / {
+            proxy_pass          http://dropzone;
+            proxy_http_version  1.1;
+            proxy_set_header    X-Real-IP          $remote_addr;
+            proxy_set_header    Host               $host;
+            proxy_set_header    X-Forwarded-For    $proxy_add_x_forwarded_for;
+            proxy_set_header    X-Forwarded-Proto  https;
+        }
+    }
+}
+```
