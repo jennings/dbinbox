@@ -14,6 +14,14 @@ h1{
   vertical-align: middle;
 }
 
+.float-right {
+    float: right;
+}
+
+.text-right {
+    text-align: right;
+}
+
 .filelist {
   font-size: 13px;
   color: #444;

@@ -12,11 +12,11 @@
 %form.span12{action: @action, multipart: true, id: 'upload'}
   %table.filelist
     %tbody.files
-  %span.btn.btn-primary.fileinput-button#upload_button{style: "float: right"}
+  %span.btn.btn-primary.fileinput-button#upload_button.float-right
     %i.icon-plus.icon-white
     %span Choose files
     %input(type="file" name="files[]" multiple)
-  %span.btn#show_send_message{style: "float: right; margin-right: 10px; display: none"}
+  %span.btn#show_send_message.float-right.hidden{style: "margin-right: 10px;"}
     %i.icon-edit.icon-black
     %span Send Message
   .span10.fileupload-progress.fade
