@@ -53,7 +53,7 @@ class Numeric
 end
 
 before do
-  @require_registration_password = !settings.registration_password.empty?
+  @require_registration_password = !(settings.registration_password.nil? || settings.registration_password.empty?)
 end
 
 # ----------------------------------------------
@@ -75,7 +75,7 @@ end
 
 get '/' do
   if !params[:oauth_token]
-    if settings.default_username
+    if settings.default_username && !settings.default_username.empty?
       redirect "/#{settings.default_username}"
     else
       haml :index
