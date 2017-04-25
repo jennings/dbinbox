@@ -76,7 +76,7 @@ Vagrant.configure("2") do |config|
 
     bundle install --clean --without production
     mkdir -p log
-    export $(cat '.env' | xargs)
+    set -o allexport; source .env; set +o allexport
     bundle exec shotgun --env development --host 0.0.0.0 >>log/stdout.log 2>>log/stderr.log &
   SHELL
 end
