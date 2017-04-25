@@ -29,8 +29,9 @@ SecureHeaders::Configuration.default do |config|
   }
   config.csp = {
     default_src: %w('self'),
-    script_src: %w('self'),
-    style_src: %w('self'),
+    script_src: %w('self' https://maxcdn.bootstrapcdn.com https://code.jquery.com),
+    style_src: %w('self' https://maxcdn.bootstrapcdn.com),
+    font_src: %w(https://maxcdn.bootstrapcdn.com)
   }
 end
 

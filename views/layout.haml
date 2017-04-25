@@ -4,15 +4,15 @@
     %title Dropzone
     %meta(name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0")
     %meta(name="viewport" content="width=device-width")
-    %link{rel: "stylesheet", href: url("/css/bootstrap.min.css")}
-    %link{rel: "stylesheet", href: url("/css/bootstrap-responsive.min.css")}
+    %link{rel: "stylesheet", href: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css", integrity: "sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u", crossorigin: "anonymous"}
     %link{rel: "stylesheet", href: url("/css/jquery.fileupload-ui.css")}
     %link{rel: "stylesheet", href: url("/css/style.css")}
   %body
     .container
       =yield
 
-    %script{src: url("/js/jquery.min.js")}
+    %script{src: "https://code.jquery.com/jquery-3.2.1.min.js", integrity: "sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=", crossorigin: "anonymous"}
+    %script{src: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js", integrity: "sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa", crossorigin: "anonymous"}
     %script{src: url("/js/vendor/jquery.ui.widget.js")}
     %script{src: url("/js/jquery.iframe-transport.js")}
     %script{src: url("/js/jquery.fileupload.js")}
