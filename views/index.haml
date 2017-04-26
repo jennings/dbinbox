@@ -17,7 +17,7 @@
     -if @require_registration_password
       .form-group{class: @errors[:registration_password] ? "has-error" : ""}
         .col-sm-6
-          %input.form-control(placeholder="Registration password" name="registration_password" type="text")
+          %input.form-control(placeholder="Registration password" name="registration_password" type="password")
         - if @errors[:registration_password]
           .col-sm-6.text-danger= @errors[:registration_password]
     .form-group
