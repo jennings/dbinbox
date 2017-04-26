@@ -54,6 +54,7 @@ end
 
 before do
   @require_registration_password = !(settings.registration_password.nil? || settings.registration_password.empty?)
+  @errors = {}
 end
 
 # ----------------------------------------------
@@ -115,7 +116,7 @@ get '/' do
     else
       LOG.info "\"#{session[:username]}\"'s account could not be created."
       LOG.info @user
-      @error = "Sorry, your information couldn't be saved: #{@user.errors.map(&:to_s).join(', ')}. Please try again or report the issue to <a href='https://twitter.com/cgenco'>@cgenco</a>."
+      @errors[:general] = "Sorry, your information couldn't be saved: #{@user.errors.map(&:to_s).join(', ')}. Please try again or report the issue to <a href='https://twitter.com/cgenco'>@cgenco</a>."
       haml :index
     end
   end
@@ -131,18 +132,18 @@ post '/' do
   # then return an error
   user = User.get(username)
   if !user.nil? && user.authenticated
-    @error = "Sorry! \"#{username}\" is already taken."
+    @errors[:username] = "Sorry! \"#{username}\" is already taken."
   elsif !(username =~ /^\w+$/)
-    @error = "Your username must only contain letters." if !(username =~ /^\w+$/)
+    @errors[:username] = "Your username must only contain letters." if !(username =~ /^\w+$/)
   elsif username.empty?
-    @error = "Your username can't be blank! I need to use that one! D:"
+    @errors[:username] = "Your username can't be blank! I need to use that one! D:"
   elsif @require_registration_password && settings.registration_password != params[:registration_password]
-    @error = "Sorry, you must provide the right registration password to create an account."
+    @errors[:registration_password] = "Sorry, you must provide the right registration password to create an account."
   elsif username =~ /^admin|login|logout|delete|send$/
-    @error = "Nice try, smarty pants."
+    @errors[:username] = "Nice try, smarty pants."
   end
 
-  return haml(:index) if @error
+  return haml(:index) if @errors.any?
 
   dbsession = DropboxSession.new(settings.dbkey, settings.dbsecret)
   session[:dropbox_session] = dbsession.serialize #serialize and save this DropboxSession
@@ -278,7 +279,7 @@ get "/:username/?*" do
   @user = User.get(params[:username])
   @action = "/send/" + params[:username] + (@subfolder ? "/" + @subfolder : "")
   if !@user
-    @error = "Username '#{params[:username]}' not found. Would you like to link it with a Dropbox account?"
+    @errors[:username] = "Username '#{params[:username]}' not found. Would you like to link it with a Dropbox account?"
     return haml :index
   end
 

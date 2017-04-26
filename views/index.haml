@@ -4,7 +4,7 @@
 
 -if !session[:registered] # if the user isn't registered
   %form.form-horizontal{action: "/", method: "post"}
-    .form-group{class: @error.nil? || @error.empty? ? "" : "has-error"}
+    .form-group{class: @errors[:username] ? "has-error" : ""}
       .col-sm-6
         -if request.host
           .input-group
@@ -12,14 +12,19 @@
             %input#username.form-control(placeholder="your_username_here" name="username" type="text" value="#{params['username']}")
         -else
           %input#username.form-control(placeholder="your_username_here" name="username" type="text" value="#{params['username']}")
+      - if @errors[:username]
+        .col-sm-6.text-danger= @errors[:username]
     -if @require_registration_password
-      .form-group
+      .form-group{class: @errors[:registration_password] ? "has-error" : ""}
         .col-sm-6
           %input.form-control(placeholder="Registration password" name="registration_password" type="text")
+        - if @errors[:registration_password]
+          .col-sm-6.text-danger= @errors[:registration_password]
     .form-group
       .col-sm-4
         %button.btn.btn-success(type='submit' title="links with Dropbox") link with Dropbox
-    %span.help-inline=@error
+    - if @errors[:general]
+      .bg-danger= @errors[:general]
 -else
   %p.text-success You're registered!
   %p

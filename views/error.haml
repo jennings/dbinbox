@@ -1,1 +1,1 @@
-Oops! Something went wrong: #{@error}
+Oops! Something went wrong: #{@errors.reduce("") {|acc, s| acc + s[1]}}
