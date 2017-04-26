@@ -137,10 +137,12 @@ post '/' do
     @errors[:username] = "Your username must only contain letters." if !(username =~ /^\w+$/)
   elsif username.empty?
     @errors[:username] = "Your username can't be blank! I need to use that one! D:"
-  elsif @require_registration_password && settings.registration_password != params[:registration_password]
-    @errors[:registration_password] = "Sorry, you must provide the right registration password to create an account."
   elsif username =~ /^admin|login|logout|delete|send$/
     @errors[:username] = "Nice try, smarty pants."
+  end
+
+  if @require_registration_password && settings.registration_password != params[:registration_password]
+    @errors[:registration_password] = "Sorry, you must provide the right registration password to create an account."
   end
 
   return haml(:index) if @errors.any?
