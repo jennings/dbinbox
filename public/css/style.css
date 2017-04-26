@@ -16,6 +16,10 @@ h1 small {
     font-size: 10pt;
 }
 
+.display-none {
+    display: none;
+}
+
 .float-right {
     float: right;
 }

@@ -16,13 +16,13 @@
       }
       var row = $(
         '<tr class="template-upload">' +
-          '<td class="filename-col span7">' +
+          '<td class="filename-col col-sm-7">' +
           '<img class="sprite s_page_white_get" src="/img/icon_spacer.gif" />' +
           '<span class="name"></span>' +
           '<span class="size"></span>' +
           "</td>" +
-          '<td class="info-col span4">uploading to Dropbox...</td>' +
-          '<td class="status-col span1">' +
+          '<td class="info-col col-sm-4">uploading to Dropbox...</td>' +
+          '<td class="status-col col-sm-1">' +
           '<img class="" src="/img/ajax-loading-small.gif" />' +
           "</td>" +
           "</tr>"
@@ -40,13 +40,13 @@
     function getDownloadRowHTML(file) {
       var row = $(
         '<tr class="template-download">' +
-          '<td class="filename-col span7">' +
+          '<td class="filename-col col-sm-7">' +
           '<img class="sprite s_page_white_get image_icon" src="/img/icon_spacer.gif" />' +
           '<span class="name"></span>' +
           '<span class="size"></span>' +
           "</td>" +
-          '<td class="info-col span4"></td>' +
-          '<td class="status-col span1">' +
+          '<td class="info-col col-sm-4"></td>' +
+          '<td class="status-col col-sm-1">' +
           '<img class="sprite s_synced status_image" src="/img/icon_spacer.gif" />' +
           "</td>" +
           "</tr>"
@@ -116,9 +116,6 @@
       }
     })
 
-    $("#send_text").slideUp()
-
-    $("#show_send_message").fadeIn()
     $("#show_send_message").click(function() {
       $(this).fadeOut()
       $("#send_text").slideDown()

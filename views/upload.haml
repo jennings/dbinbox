@@ -1,25 +1,25 @@
 = haml(:_signin, :layout => false)
 
 .row
-  .span9
+  .col-sm-9
     %h1
       %img(class="modal-h-img sprite s_upload_32 modal-h-img" src="/img/icon_spacer.gif")
       Send files to #{@user.display_name}
       %small= "Dropbox/Apps/dbinbox/" + @subfolder
 
-.span8.offset2.instructions drag your file(s) here to upload
+.col-sm-8.col-sm-offset-2.instructions drag your file(s) here to upload
 
-%form.span12{action: @action, multipart: true, id: 'upload'}
+%form.col-sm-12{action: @action, multipart: true, id: 'upload'}
   %table.filelist
     %tbody.files
   %span.btn.btn-primary.fileinput-button#upload_button.float-right
     %i.icon-plus.icon-white
     %span Choose files
     %input(type="file" name="files[]" multiple)
-  %span.btn#show_send_message.float-right.hidden
+  %span.btn.btn-link#show_send_message.float-right
     %i.icon-edit.icon-black
     %span Send Message
-  .span10.fileupload-progress.fade
+  .col-sm-10.fileupload-progress.fade
     .progress.progress-success.progress-striped.active
     .bar.zero-width
     .progress-extended &nbsp;
@@ -30,7 +30,7 @@
 
 .clearfix
 
-%form.form-horizontal.span12{action: @action, id: 'send_text', method: 'post'}
+%form.form-horizontal.col-sm-12.display-none{action: @action, id: 'send_text', method: 'post'}
   %legend
     %img(class="modal-h-img sprite s_page_white_gray_32 modal-h-img" src="/img/icon_spacer.gif")
     Send text file message
