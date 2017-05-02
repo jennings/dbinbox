@@ -180,7 +180,8 @@ get "/admin" do
 
     session[:username] = @user.username
     session[:registered] = true
-    return haml :admin
+    # redirect so the ugly params aren't in the URL anymore
+    redirect to('/admin')
   elsif session[:registered]
     # already registered; render the admin panel
 
