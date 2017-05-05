@@ -49,14 +49,24 @@ use. The service in the container listens on port 8000 and stores its data in
 cp .env.sample /path/to/environment_variables.txt
 nano /path/to/environment_variables.txt
 
-# Create and
-docker container run -d --name dropzone \
-                     -p 8000:8000 \
-                     -v /path/to/data:/data \
-                     --env-file /path/to/environment_variables.txt
-                     --restart unless-stopped \
+# Create and start the container
+docker container run -d --name dropzone                             \
+                     -p 8000:8000                                   \
+                     -v /path/to/data:/data                         \
+                     --env-file /path/to/environment_variables.txt  \
+                     --restart unless-stopped                       \
                      jennings/dropzone
 ```
+
+The environment variable `DATABASE_URL` controls where user data is stored. It
+defaults to:
+
+    sqlite3:///data/dropzone.sqlite3
+
+But if you expect to be hosting thousands of users (?), you can change it to a
+Postgres URL like:
+
+    postgres://hostname/database?user=myuser&password=mysecret
 
 You probably want HTTPS, so this can be run behind a [reverse
 proxy](#reverse-proxy-with-nginx).
@@ -66,10 +76,10 @@ proxy](#reverse-proxy-with-nginx).
 
 ```bash
 # for Postgres
-bundle install --without sqlite development
+bundle install --deployment --without sqlite development
 
 # for SQLite
-bundle install --without postgres development
+bundle install --deployment --without postgres development
 
 # Get these values from developer.dropbox.com
 export DROPBOX_KEY="my-dropbox-key"
