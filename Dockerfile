@@ -1,12 +1,5 @@
 FROM        ubuntu:xenial
 
-WORKDIR     /app
-VOLUME      ["/data"]
-EXPOSE      8000
-ENV         DATABASE_URL=sqlite3:///data/dropzone.sqlite3
-ENTRYPOINT  ["/usr/local/bin/bundle", "exec"]
-CMD         ["rackup", "--env", "deployment", "--host", "0.0.0.0", "--port", "8000"]
-
 RUN         apt-get update \
             && apt-get install -y wget \
             && echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > '/etc/apt/sources.list.d/pgdg.list' \
@@ -22,7 +15,13 @@ RUN         apt-get update \
             && rm -rf /var/lib/apt/lists/*  \
             && /usr/bin/gem install bundler
 
+WORKDIR     /app
 COPY        ["Gemfile", "Gemfile.lock", "/app/"]
 RUN         bundle install --deployment --without development
 
 COPY        [".", "/app/"]
+
+VOLUME      ["/data"]
+EXPOSE      8000
+ENV         DATABASE_URL=sqlite3:///data/dropzone.sqlite3
+CMD         ["/usr/local/bin/bundle", "exec", "rackup", "--env", "deployment", "--host", "0.0.0.0", "--port", "8000"]
