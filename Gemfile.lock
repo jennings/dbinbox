@@ -40,7 +40,8 @@ GEM
       json
     eventmachine (1.2.3)
     fastercsv (1.5.5)
-    haml (4.0.7)
+    haml (5.0.1)
+      temple (>= 0.8.0)
       tilt
     json (1.8.6)
     multi_json (1.12.1)
@@ -59,6 +60,7 @@ GEM
       rack-protection (= 2.0.0)
       tilt (~> 2.0)
     stringex (1.5.1)
+    temple (0.8.0)
     thin (1.7.0)
       daemons (~> 1.0, >= 1.0.9)
       eventmachine (~> 1.0, >= 1.0.4)
