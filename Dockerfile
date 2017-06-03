@@ -1,25 +1,29 @@
-FROM        ubuntu:xenial
-
-RUN         apt-get update \
-            && apt-get install -y wget \
-            && echo 'deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main' > '/etc/apt/sources.list.d/pgdg.list' \
-            && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-            && apt-get update               \
-            && apt-get install -y           \
-                build-essential             \
-                ruby                        \
-                ruby-dev                    \
-                libsqlite3-dev              \
-                libpq-dev                   \
-                postgresql-server-dev-9.4   \
-            && rm -rf /var/lib/apt/lists/*  \
-            && wget --quiet -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 \
-            && chmod +x /usr/local/bin/dumb-init \
-            && /usr/bin/gem install bundler
+FROM        ruby:2-alpine
 
 WORKDIR     /app
 COPY        ["Gemfile", "Gemfile.lock", "/app/"]
-RUN         bundle install --deployment --without development
+
+RUN         apk add --no-cache \
+                ca-certificates \
+                wget \
+            && update-ca-certificates \
+            && wget -q -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 \
+            && chmod +x /usr/local/bin/dumb-init \
+            && apk add --no-cache \
+                make \
+                gcc \
+                g++ \
+                libc-dev \
+                sqlite-dev \
+                postgresql-dev \
+            && /usr/local/bin/gem install bundler \
+            && bundle install --deployment --without development \
+            && apk del \
+                ca-certificates \
+                wget \
+                make \
+                gcc \
+                g++
 
 COPY        [".", "/app/"]
 
