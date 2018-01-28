@@ -2,6 +2,7 @@ require 'sinatra'
 require 'secure_headers'
 
 set :port, 8000
+set :session_secret, ENV['SESSION_SECRET'] if ENV.fetch('SESSION_SECRET')
 enable :sessions
 disable :run, :reload
 

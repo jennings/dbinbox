@@ -77,6 +77,7 @@ Vagrant.configure("2") do |config|
     bundle install --clean --without production postgres --with development sqlite
     mkdir -p log
     set -o allexport; source .env; set +o allexport
-    bundle exec shotgun --env development --host 0.0.0.0 >>log/stdout.log 2>>log/stderr.log &
+    # SESSION_SECRET keeps sessions alive between requests when using shotgun
+    SESSION_SECRET=123456789abcdef123456789abcdef bundle exec shotgun --env development --host 0.0.0.0 >>log/stdout.log 2>>log/stderr.log &
   SHELL
 end

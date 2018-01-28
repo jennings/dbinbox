@@ -1,7 +1,8 @@
 require 'sinatra'
-require 'dropbox_sdk'
+require 'dropbox_api'
 require 'json'
 require 'haml'
+require 'yaml'
 # database from http://datamapper.org/getting-started.html
 require 'dm-core'
 require 'dm-types'
@@ -11,9 +12,9 @@ require 'dm-validations'
 DataMapper.setup(:default, settings.database_url)
 
 # from http://stackoverflow.com/questions/8414395/verb-agnostic-matching-in-sinatra
-def self.get_or_post(url,&block)
-  get(url,&block)
-  post(url,&block)
+def self.get_or_post(url, &block)
+  get(url, &block)
+  post(url, &block)
 end
 
 class User
@@ -21,7 +22,8 @@ class User
 
   include DataMapper::Resource
   property :username, String, :key => true, :required => true, :unique => true, :format => /^\w+$/
-  property :dropbox_session, Text
+  property :dropbox_account, Text
+  property :dropbox_token, Text
   property :referral_link, String, :length => 250
   property :authenticated, Boolean
   property :display_name, String, :length => 250
@@ -58,7 +60,7 @@ end
 # user enters desired username
 # app checks that username isn't already registered
 # if yes -> redirect to home page with error message
-# app stores dbsession and desired username in session
+# app stores dropbox_account and desired username in session
 # dropbox authenticates
 # app creates user from session's username, dbtoken, and info from /account/info
 # doublechecks that username isn't taken
@@ -70,51 +72,76 @@ end
 # if exists, look up access token and use that
 
 get '/' do
-  if !params[:oauth_token]
-    if settings.default_username && !settings.default_username.empty?
-      redirect "/#{settings.default_username}"
-    else
-      haml :index
-    end
+  if settings.default_username && !settings.default_username.empty?
+    redirect "/#{settings.default_username}"
   else
-    logger.info "Creating account for \"#{session[:username]}\"."
-    # the user has returned from Dropbox
-    # we've been authorized, so now request an access_token
-    dbsession = DropboxSession.deserialize(session[:dropbox_session])
-    dbsession.get_access_token
-
-    dbclient = DropboxClient.new(dbsession)
-
-    # get info from dropbox
-    account_info = dbclient.account_info
-    puts "account_info = #{account_info}"
-    quota = account_info["quota_info"]
-
-    @user = User.create(
-      :username        => session[:username],
-      :dropbox_session => dbsession.serialize,
-      # :referral_link => account_info["referral_link"],
-      :authenticated   => true,
-      :display_name    => account_info["display_name"],
-      :uid             => account_info["uid"],
-      :country         => account_info["country"],
-      :quota           => quota["quota"],
-      :normal          => quota["normal"],
-      :shared          => quota["shared"],
-      :created_at      => Time.now
-    )
-
-    if @user.saved?
-      logger.info "\"#{session[:username]}\"'s account has been created."
-      session[:registered] = true
-      haml :index
-    else
-      logger.info "\"#{session[:username]}\"'s account could not be created."
-      logger.info @user
-      @errors[:general] = "Sorry, your information couldn't be saved: #{@user.errors.map(&:to_s).join(', ')}. Please try again or report the issue to <a href='https://twitter.com/cgenco'>@cgenco</a>."
-      haml :index
-    end
+    haml :index
   end
+end
+
+def get_auth_redirect_url(action)
+  logger.info "setting post_auth_action: '#{action}'"
+  session[:post_auth_action] = action
+  url('/auth_callback')
+end
+
+get '/auth_callback' do
+  authenticator = get_authenticator
+  token_info = authenticator.get_token(params[:code], redirect_uri: url('/auth_callback'))
+  client = get_client token_info.token
+  session[:dropbox_account] = client.get_current_account.to_hash
+  session[:dropbox_token] = token_info.token
+
+  auth_action = session[:post_auth_action]
+  if auth_action == :create
+    create_user
+  elsif auth_action == :admin
+    auth_for_admin
+  else
+    logger.error "unknown post_auth_action: '#{auth_action}'"
+    redirect url('/')
+  end
+end
+
+def create_user
+  logger.info "Creating account for \"#{session[:username]}\"."
+  # the user has returned from Dropbox
+  # we've been authorized, so now request an access_token
+  dropbox_account = session[:dropbox_account]
+  dropbox_token = session[:dropbox_token]
+
+  # get info from dropbox
+  dbclient = get_client(dropbox_token)
+  account_info = dbclient.get_current_account
+  # quota = account_info["quota_info"]
+
+  @user = User.create(
+    :username        => session[:username],
+    :dropbox_account => YAML.dump(dropbox_account),
+    :dropbox_token   => dropbox_token,
+    # :referral_link => account_info["referral_link"],
+    :authenticated   => true,
+    :display_name    => account_info.name.display_name,
+    :uid             => account_info.account_id,
+    # :quota         => quota["quota"],
+    # :normal        => quota["normal"],
+    # :shared        => quota["shared"],
+    :created_at      => Time.now
+  )
+
+  if @user.saved?
+    logger.info "\"#{session[:username]}\"'s account has been created."
+    session[:registered] = true
+    redirect url("/#{session{:username}}")
+  else
+    logger.info "\"#{session[:username]}\"'s account could not be created."
+    logger.info @user
+    @errors[:general] = "Sorry, your information couldn't be saved: #{@user.errors.map(&:to_s).join(', ')}. Please try again or report the issue to <a href='https://twitter.com/cgenco'>@cgenco</a>."
+    haml :index
+  end
+end
+
+def auth_for_admin
 end
 
 # request a username
@@ -142,18 +169,16 @@ post '/' do
 
   return haml(:index) if @errors.any?
 
-  dbsession = DropboxSession.new(settings.dbkey, settings.dbsecret)
-  session[:dropbox_session] = dbsession.serialize #serialize and save this DropboxSession
+  authenticator = get_authenticator
   session[:username] = username
 
   # send them out to authenticate us
-  redirect dbsession.get_authorize_url(url('/'))
+  redirect authenticator.authorize_url(redirect_uri: get_auth_redirect_url(:create))
 end
 
 get "/login" do
-  dbsession = DropboxSession.new(settings.dbkey, settings.dbsecret)
-  session[:dropbox_session] = dbsession.serialize
-  redirect dbsession.get_authorize_url(url('/admin'))
+  authenticator = get_authenticator
+  redirect authenticator.authorize_url(redirect_uri: get_auth_redirect_url(:admin))
 end
 
 get "/logout" do
@@ -162,32 +187,33 @@ get "/logout" do
 end
 
 get "/admin" do
-  if params[:oauth_token]
-    # just came from being authenticated from Dropbox
-    # stash this user's username and update their session
-    dbsession = DropboxSession.deserialize(session[:dropbox_session])
-    dbsession.get_access_token
-    dbclient = DropboxClient.new(dbsession)
-    @user = User.first(:uid => dbclient.account_info["uid"])
-
-    # update the user with the new session in case they're re-authenticating
-    @user.update(:dropbox_session => dbsession.serialize)
-
-    session[:username] = @user.username
-    session[:registered] = true
-    # redirect so the ugly params aren't in the URL anymore
-    redirect to('/admin')
-  elsif session[:registered]
+  if session[:registered]
     # already registered; render the admin panel
-
     @user = User.get(session[:username])
-
     return haml :admin
   else
-    # need to get authenticated by Dropbox first
-    redirect url('/login')
-  end
+    if
+      # just came from being authenticated from Dropbox
+      # stash this user's username and update their session
+      dropbox_account = session[:dropbox_account]
+      dropbox_token = session[:dropbox_token]
+      dbclient = get_client(dropbox_token)
+      @user = User.first(:uid => dbclient.get_current_account.account_id)
 
+      # update the user with the new session in case they're re-authenticating
+      @user.update(
+        dropbox_account: YAML.dump(dropbox_account),
+        dropbox_token: dropbox_token,
+      )
+
+      session[:username] = @user.username
+      session[:registered] = true
+      haml :admin
+    else
+      # need to get authenticated by Dropbox first
+      redirect url('/login')
+    end
+  end
 end
 
 post "/admin" do
@@ -220,9 +246,9 @@ get_or_post '/send/:username/?*' do
     return
   end
 
-  redirect '/' unless @user.dropbox_session
-  @dbsession = DropboxSession.deserialize(@user.dropbox_session)
-  @client    = DropboxClient.new(@dbsession, :app_folder)
+  redirect '/' unless @user.dropbox_account
+  @dropbox_account = YAML.load(@user.dropbox_account)
+  @client    = get_client @user.dropbox_token
 
   params[:files] ||= []
 
@@ -245,24 +271,21 @@ get_or_post '/send/:username/?*' do
   responses = params[:files].map do |file|
     begin
       # if things go normally, just return the hashed response
-      response = @client.put_file(File.join(@subfolder || '', file[:filename]), file[:message] || file[:tempfile].read)
-      # alter some fields for simplicity on the client end
-      response[:name]          = response["path"].gsub(/^\//,'')
-      response[:size]          = response["bytes"]
-      response[:human_size]    = response["bytes"].to_human
-      response[:url]           = ""
-      response[:thumbnail_url] = ""
-      response[:delete_url]    = ""
-      response[:delete_type]   = "DELETE"
-      response
-    rescue DropboxAuthError
-      logger.error "DropboxAuthError"
+      response = @client.upload(File.join(@subfolder || '', file[:filename]), file[:message] || file[:tempfile].read)
+      {
+        name: response.path_display.sub(/^\//, ''),
+        size: response.size,
+        human_size: response.size.to_human,
+        delete_type: 'DELETE',
+      }
+    rescue DropboxApi::Errors::BasicError => err
+      logger.error err
       session[:registered] = false
       @user.authenticated  = false
       @user.save
       {
         :error       => "Client not authorized.",
-        :error_class => 'DropboxAuthError',
+        :error_class => err.class.name,
         :name        => file[:filename]
       }
     end
@@ -286,4 +309,12 @@ get "/:username/?*" do
   else
     haml :enter_password
   end
+end
+
+def get_authenticator
+  DropboxApi::Authenticator.new(settings.dbkey, settings.dbsecret)
+end
+
+def get_client(token)
+  DropboxApi::Client.new(token)
 end

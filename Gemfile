@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 gem 'sinatra'
-gem 'dropbox-sdk'
+gem 'dropbox_api'
 gem 'json'
 gem 'haml'
 gem 'secure_headers'
