@@ -8,7 +8,7 @@ gem 'secure_headers'
 
 # database
 gem 'dm-core'
-gem 'dm-types'
+gem 'dm-types', '>= 1.2.0'
 gem 'dm-migrations'
 gem 'dm-validations'
 

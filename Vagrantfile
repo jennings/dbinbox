@@ -67,7 +67,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y ruby ruby-dev sqlite3 libsqlite3-dev build-essential
-    gem install bundler
+    gem update --system --no-document
+    gem install bundler --no-document
   SHELL
 
   config.vm.provision "shell", run: 'always', privileged: false, inline: <<-SHELL
