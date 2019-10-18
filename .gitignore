@@ -1,14 +1,10 @@
+.bundle/
+.byebug_history
+.env
+
 # Database files
 *.db
 *.backup
-
-# from http://gembundler.com/deploying.html
-.bundle/
-
-# Ignore Dropbox API keys
-.dbsecret
-.dbkey
-.env
 
 # Ignore locally stored gems
 vendor/

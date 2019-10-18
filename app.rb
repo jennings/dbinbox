@@ -83,18 +83,21 @@ end
 def get_auth_redirect_url(action)
   logger.info "setting post_auth_action: '#{action}'"
   session[:post_auth_action] = action
-  url('/auth_callback')
+  url('/auth/dropbox_oauth2')
 end
 
-get '/auth_callback' do
-  token = BACKEND.get_token(params[:code], url('/auth_callback'))
+get '/auth/:provider/callback' do |provider|
+  auth = request.env["omniauth.auth"]
+  halt 400 if !auth
+  token = auth['credentials']['token']
   session[:dropbox_token] = token
 
   auth_action = session[:post_auth_action]
-  if auth_action == :create
+  case auth_action
+  when :create
     create_user
-  elsif auth_action == :admin
-    auth_for_admin
+  when :admin
+    redirect url('/admin')
   else
     logger.error "unknown post_auth_action: '#{auth_action}'"
     redirect url('/')
@@ -113,13 +116,9 @@ def create_user
   @user = User.create(
     :username        => session[:username],
     :dropbox_token   => dropbox_token,
-    # :referral_link => account_info["referral_link"],
     :authenticated   => true,
-    :display_name    => account_info.display_name,
-    :uid             => account_info.id,
-    # :quota         => quota["quota"],
-    # :normal        => quota["normal"],
-    # :shared        => quota["shared"],
+    :display_name    => account_info[:display_name],
+    :uid             => account_info[:id],
     :created_at      => Time.now
   )
 
@@ -133,10 +132,6 @@ def create_user
     @errors[:general] = "Sorry, your information couldn't be saved: #{@user.errors.map(&:to_s).join(', ')}. Please try again or report the issue to <a href='https://twitter.com/cgenco'>@cgenco</a>."
     haml :index
   end
-end
-
-def auth_for_admin
-  redirect url('/admin')
 end
 
 # request a username
@@ -167,11 +162,11 @@ post '/' do
   session[:username] = username
 
   # send them out to authenticate us
-  redirect BACKEND.get_authenticate_uri(get_auth_redirect_url(:create))
+  redirect get_auth_redirect_url(:create)
 end
 
 get "/login" do
-  redirect BACKEND.get_authenticate_uri(get_auth_redirect_url(:admin))
+  redirect get_auth_redirect_url(:admin)
 end
 
 get "/logout" do
@@ -190,7 +185,7 @@ get "/admin" do
       # stash this user's username and update their session
       dropbox_token = session[:dropbox_token]
       account = BACKEND.get_account(dropbox_token)
-      @user = User.first(:uid => account.id)
+      @user = User.first(:uid => account[:id])
 
       # update the user with the new session in case they're re-authenticating
       @user.update(
