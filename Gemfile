@@ -14,6 +14,8 @@ gem 'dm-validations'
 
 group :development do
   gem 'shotgun'
+  gem 'rspec', '~> 3.9.0'
+  gem 'guard-rspec', require: false
 end
 
 group :sqlite do
