@@ -89,8 +89,7 @@ end
 
 get '/auth_callback' do
   token = BACKEND.get_token(params[:code], url('/auth_callback'))
-  client = BACKEND.get_client token
-  session[:dropbox_account] = client.get_current_account.to_hash
+  session[:dropbox_account] = BACKEND.get_account(token).to_hash
   session[:dropbox_token] = token
 
   auth_action = session[:post_auth_action]
@@ -112,8 +111,7 @@ def create_user
   dropbox_token = session[:dropbox_token]
 
   # get info from dropbox
-  dbclient = BACKEND.get_client(dropbox_token)
-  account_info = dbclient.get_current_account
+  account_info = BACKEND.get_account(dropbox_token)
   # quota = account_info["quota_info"]
 
   @user = User.create(
@@ -197,8 +195,8 @@ get "/admin" do
       # stash this user's username and update their session
       dropbox_account = session[:dropbox_account]
       dropbox_token = session[:dropbox_token]
-      dbclient = BACKEND.get_client(dropbox_token)
-      @user = User.first(:uid => dbclient.get_current_account.account_id)
+      account = BACKEND.get_account(dropbox_token)
+      @user = User.first(:uid => account.account_id)
 
       # update the user with the new session in case they're re-authenticating
       @user.update(
@@ -248,7 +246,6 @@ get_or_post '/send/:username/?*' do
 
   redirect '/' unless @user.dropbox_account
   @dropbox_account = YAML.load(@user.dropbox_account)
-  @client    = BACKEND.get_client @user.dropbox_token
 
   params[:files] ||= []
 
@@ -271,14 +268,14 @@ get_or_post '/send/:username/?*' do
   responses = params[:files].map do |file|
     begin
       # if things go normally, just return the hashed response
-      response = @client.upload(File.join(@subfolder || '', file[:filename]), file[:message] || file[:tempfile].read)
+      response = BACKEND.upload(@user.dropbox_token, File.join(@subfolder || '', file[:filename]), file[:message] || file[:tempfile].read)
       {
         name: response.path_display.sub(/^\//, ''),
         size: response.size,
         human_size: response.size.to_human,
         delete_type: 'DELETE',
       }
-    rescue DropboxApi::Errors::BasicError => err
+    rescue => err
       logger.error err
       session[:registered] = false
       @user.authenticated  = false

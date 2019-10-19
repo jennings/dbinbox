@@ -17,11 +17,21 @@ class DropboxBackend
     token_info.token
   end
 
-  def get_client(token)
-    DropboxApi::Client.new(token)
+  def get_account(token)
+    client = get_client(token)
+    client.get_current_account
+  end
+
+  def upload(token, filename, data)
+    client = get_client(token)
+    client.upload(filename, data)
   end
 
   private
+
+  def get_client(token)
+    DropboxApi::Client.new(token)
+  end
 
   def get_authenticator
     DropboxApi::Authenticator.new(@key, @secret)
