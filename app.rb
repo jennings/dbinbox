@@ -1,5 +1,4 @@
 require 'sinatra'
-require 'dropbox_api'
 require 'json'
 require 'haml'
 require 'yaml'
@@ -9,7 +8,10 @@ require 'dm-types'
 require 'dm-migrations'
 require 'dm-validations'
 
+require_relative './dropbox_backend'
+
 DataMapper.setup(:default, settings.database_url)
+BACKEND = DropboxBackend.new(settings.dbkey, settings.dbsecret)
 
 # from http://stackoverflow.com/questions/8414395/verb-agnostic-matching-in-sinatra
 def self.get_or_post(url, &block)
@@ -86,9 +88,9 @@ def get_auth_redirect_url(action)
 end
 
 get '/auth_callback' do
-  authenticator = get_authenticator
+  authenticator = BACKEND.get_authenticator
   token_info = authenticator.get_token(params[:code], redirect_uri: url('/auth_callback'))
-  client = get_client token_info.token
+  client = BACKEND.get_client token_info.token
   session[:dropbox_account] = client.get_current_account.to_hash
   session[:dropbox_token] = token_info.token
 
@@ -111,7 +113,7 @@ def create_user
   dropbox_token = session[:dropbox_token]
 
   # get info from dropbox
-  dbclient = get_client(dropbox_token)
+  dbclient = BACKEND.get_client(dropbox_token)
   account_info = dbclient.get_current_account
   # quota = account_info["quota_info"]
 
@@ -170,7 +172,7 @@ post '/' do
 
   return haml(:index) if @errors.any?
 
-  authenticator = get_authenticator
+  authenticator = BACKEND.get_authenticator
   session[:username] = username
 
   # send them out to authenticate us
@@ -178,7 +180,7 @@ post '/' do
 end
 
 get "/login" do
-  authenticator = get_authenticator
+  authenticator = BACKEND.get_authenticator
   redirect authenticator.authorize_url(redirect_uri: get_auth_redirect_url(:admin))
 end
 
@@ -198,7 +200,7 @@ get "/admin" do
       # stash this user's username and update their session
       dropbox_account = session[:dropbox_account]
       dropbox_token = session[:dropbox_token]
-      dbclient = get_client(dropbox_token)
+      dbclient = BACKEND.get_client(dropbox_token)
       @user = User.first(:uid => dbclient.get_current_account.account_id)
 
       # update the user with the new session in case they're re-authenticating
@@ -249,7 +251,7 @@ get_or_post '/send/:username/?*' do
 
   redirect '/' unless @user.dropbox_account
   @dropbox_account = YAML.load(@user.dropbox_account)
-  @client    = get_client @user.dropbox_token
+  @client    = BACKEND.get_client @user.dropbox_token
 
   params[:files] ||= []
 
@@ -310,12 +312,4 @@ get "/:username/?*" do
   else
     haml :enter_password
   end
-end
-
-def get_authenticator
-  DropboxApi::Authenticator.new(settings.dbkey, settings.dbsecret)
-end
-
-def get_client(token)
-  DropboxApi::Client.new(token)
 end
