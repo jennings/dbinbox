@@ -142,6 +142,7 @@ def create_user
 end
 
 def auth_for_admin
+  redirect url('/admin')
 end
 
 # request a username
