@@ -88,11 +88,10 @@ def get_auth_redirect_url(action)
 end
 
 get '/auth_callback' do
-  authenticator = BACKEND.get_authenticator
-  token_info = authenticator.get_token(params[:code], redirect_uri: url('/auth_callback'))
-  client = BACKEND.get_client token_info.token
+  token = BACKEND.get_token(params[:code], url('/auth_callback'))
+  client = BACKEND.get_client token
   session[:dropbox_account] = client.get_current_account.to_hash
-  session[:dropbox_token] = token_info.token
+  session[:dropbox_token] = token
 
   auth_action = session[:post_auth_action]
   if auth_action == :create
@@ -172,16 +171,14 @@ post '/' do
 
   return haml(:index) if @errors.any?
 
-  authenticator = BACKEND.get_authenticator
   session[:username] = username
 
   # send them out to authenticate us
-  redirect authenticator.authorize_url(redirect_uri: get_auth_redirect_url(:create))
+  redirect BACKEND.get_authenticate_uri(get_auth_redirect_url(:create))
 end
 
 get "/login" do
-  authenticator = BACKEND.get_authenticator
-  redirect authenticator.authorize_url(redirect_uri: get_auth_redirect_url(:admin))
+  redirect BACKEND.get_authenticate_uri(get_auth_redirect_url(:admin))
 end
 
 get "/logout" do
