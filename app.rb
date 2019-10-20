@@ -24,7 +24,6 @@ class User
 
   include DataMapper::Resource
   property :username, String, :key => true, :required => true, :unique => true, :format => /^\w+$/
-  property :dropbox_account, Text
   property :dropbox_token, Text
   property :referral_link, String, :length => 250
   property :authenticated, Boolean
@@ -62,7 +61,7 @@ end
 # user enters desired username
 # app checks that username isn't already registered
 # if yes -> redirect to home page with error message
-# app stores dropbox_account and desired username in session
+# app stores the desired username in session
 # dropbox authenticates
 # app creates user from session's username, dbtoken, and info from /account/info
 # doublechecks that username isn't taken
@@ -89,7 +88,6 @@ end
 
 get '/auth_callback' do
   token = BACKEND.get_token(params[:code], url('/auth_callback'))
-  session[:dropbox_account] = BACKEND.get_account(token).to_hash
   session[:dropbox_token] = token
 
   auth_action = session[:post_auth_action]
@@ -107,21 +105,18 @@ def create_user
   logger.info "Creating account for \"#{session[:username]}\"."
   # the user has returned from Dropbox
   # we've been authorized, so now request an access_token
-  dropbox_account = session[:dropbox_account]
   dropbox_token = session[:dropbox_token]
 
   # get info from dropbox
   account_info = BACKEND.get_account(dropbox_token)
-  # quota = account_info["quota_info"]
 
   @user = User.create(
     :username        => session[:username],
-    :dropbox_account => YAML.dump(dropbox_account),
     :dropbox_token   => dropbox_token,
     # :referral_link => account_info["referral_link"],
     :authenticated   => true,
-    :display_name    => account_info.name.display_name,
-    :uid             => account_info.account_id,
+    :display_name    => account_info.display_name,
+    :uid             => account_info.id,
     # :quota         => quota["quota"],
     # :normal        => quota["normal"],
     # :shared        => quota["shared"],
@@ -193,14 +188,12 @@ get "/admin" do
     if
       # just came from being authenticated from Dropbox
       # stash this user's username and update their session
-      dropbox_account = session[:dropbox_account]
       dropbox_token = session[:dropbox_token]
       account = BACKEND.get_account(dropbox_token)
-      @user = User.first(:uid => account.account_id)
+      @user = User.first(:uid => account.id)
 
       # update the user with the new session in case they're re-authenticating
       @user.update(
-        dropbox_account: YAML.dump(dropbox_account),
         dropbox_token: dropbox_token,
       )
 
@@ -244,8 +237,7 @@ get_or_post '/send/:username/?*' do
     return
   end
 
-  redirect '/' unless @user.dropbox_account
-  @dropbox_account = YAML.load(@user.dropbox_account)
+  redirect '/' unless @user.dropbox_token
 
   params[:files] ||= []
 

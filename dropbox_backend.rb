@@ -19,7 +19,11 @@ class DropboxBackend
 
   def get_account(token)
     client = get_client(token)
-    client.get_current_account
+    acct = client.get_current_account
+    {
+      id: acct.account_id,
+      display_name: acct.name.display_name,
+    }
   end
 
   def upload(token, filename, data)
