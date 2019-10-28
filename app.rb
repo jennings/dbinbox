@@ -11,7 +11,7 @@ require 'dm-validations'
 require_relative './dropbox_backend'
 
 DataMapper.setup(:default, settings.database_url)
-BACKEND = DropboxBackend.new(settings.dbkey, settings.dbsecret)
+DROPBOX = DropboxBackend.new(settings.dbkey, settings.dbsecret)
 
 # from http://stackoverflow.com/questions/8414395/verb-agnostic-matching-in-sinatra
 def self.get_or_post(url, &block)
@@ -111,7 +111,7 @@ def create_user
   dropbox_token = session[:dropbox_token]
 
   # get info from dropbox
-  account_info = BACKEND.get_account(dropbox_token)
+  account_info = DROPBOX.get_account(dropbox_token)
 
   @user = User.create(
     :username        => session[:username],
@@ -184,7 +184,7 @@ get "/admin" do
       # just came from being authenticated from Dropbox
       # stash this user's username and update their session
       dropbox_token = session[:dropbox_token]
-      account = BACKEND.get_account(dropbox_token)
+      account = DROPBOX.get_account(dropbox_token)
       @user = User.first(:uid => account[:id])
 
       # update the user with the new session in case they're re-authenticating
@@ -255,7 +255,7 @@ get_or_post '/send/:username/?*' do
   responses = params[:files].map do |file|
     begin
       # if things go normally, just return the hashed response
-      response = BACKEND.upload(@user.dropbox_token, File.join(@subfolder || '', file[:filename]), file[:message] || file[:tempfile].read)
+      response = DROPBOX.upload(@user.dropbox_token, File.join(@subfolder || '', file[:filename]), file[:message] || file[:tempfile].read)
       {
         name: response.path_display.sub(/^\//, ''),
         size: response.size,
