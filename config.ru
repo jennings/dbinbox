@@ -13,10 +13,6 @@ disable :run, :reload
 # default SQLite database.
 set :database_url, ENV['DATABASE_URL'] || "sqlite3://#{File.join(Dir.pwd, "users.db")}"
 
-# Dropbox API
-set :dbkey,    ENV['DROPBOX_KEY']
-set :dbsecret, ENV['DROPBOX_SECRET']
-
 # If running as a single-instance, the default username is the one that /
 # redirects to automatically.
 set :default_username, ENV['DROPZONE_DEFAULT_USERNAME']

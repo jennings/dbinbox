@@ -1,11 +1,6 @@
 require 'dropbox_api'
 
 class DropboxBackend
-  def initialize(key, secret)
-    @key = key
-    @secret = secret
-  end
-
   def get_account(token)
     client = get_client(token)
     acct = client.get_current_account

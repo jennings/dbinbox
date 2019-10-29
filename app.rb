@@ -11,7 +11,7 @@ require 'dm-validations'
 require_relative './dropbox_backend'
 
 DataMapper.setup(:default, settings.database_url)
-DROPBOX = DropboxBackend.new(settings.dbkey, settings.dbsecret)
+DROPBOX = DropboxBackend.new
 
 # from http://stackoverflow.com/questions/8414395/verb-agnostic-matching-in-sinatra
 def self.get_or_post(url, &block)
