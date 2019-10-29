@@ -20,6 +20,7 @@ group :development, :test do
   gem 'rspec', '~> 3.9.0'
   gem 'guard-rspec', require: false
   gem 'byebug'
+  gem 'dotenv'
 end
 
 group :development do

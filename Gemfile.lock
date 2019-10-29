@@ -39,6 +39,7 @@ GEM
       data_objects (= 0.10.17)
     do_sqlite3 (0.10.17)
       data_objects (= 0.10.17)
+    dotenv (2.7.5)
     dropbox_api (0.1.15)
       faraday (>= 0.8, <= 0.15.2)
       oauth2 (>= 1.1, <= 1.4)
@@ -146,6 +147,7 @@ DEPENDENCIES
   dm-sqlite-adapter
   dm-types (>= 1.2.0)
   dm-validations
+  dotenv
   dropbox_api
   guard-rspec
   haml
