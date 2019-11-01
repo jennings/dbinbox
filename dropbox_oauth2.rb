@@ -11,10 +11,9 @@ module OmniAuth
         :site               => 'https://api.dropboxapi.com',
         :authorize_url      => 'https://www.dropbox.com/oauth2/authorize',
         :token_url          => 'https://api.dropboxapi.com/oauth2/token',
-        :callback_url       => 'http://localhost:9393/auth/dropbox_oauth2/callback',
       }
 
-      uid { raw_info['uid'] }
+      uid { raw_info['account_id'] }
 
       info do
         {
