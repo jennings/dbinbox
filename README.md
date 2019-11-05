@@ -11,7 +11,7 @@ straight into a special inbox folder in your Dropbox.
 
 Thanks to [Christian Genco](https://github.com/christiangenco) for the bulk of
 this code. I renamed this project to "Dropzone" because it didn't feel right using
-his business' former name "dbinbox".
+his business' former name "DBinbox".
 
 Uses:
 
