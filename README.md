@@ -4,14 +4,14 @@ Dropzone
 [![Docker Build Status](https://img.shields.io/docker/build/jennings/dropzone.svg)](https://hub.docker.com/r/jennings/dropzone)
 
 An inbox for your Dropbox. For the original hosted version, see:
-[dbinbox](https://dbinbox.com).
+[Fileinbox](https://fileinbox.com/).
 
 By visiting your personal Dropzone URL, visitors will be able to upload files
 straight into a special inbox folder in your Dropbox.
 
 Thanks to [Christian Genco](https://github.com/christiangenco) for the bulk of
-this code. I renamed this repo to "Dropzone" because it didn't feel right using
-his business' name.
+this code. I renamed this project to "Dropzone" because it didn't feel right using
+his business' former name "dbinbox".
 
 Uses:
 
